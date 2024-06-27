@@ -59,5 +59,9 @@ public class User {
         return false;
     }
 
+    public String getFirstname(){
+        return firstName;
+    }
+
 
 }
