@@ -111,7 +111,7 @@ public class Atm {
          double acctBal;
 
          do {
-            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer from :  ");
+            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer from :  ", theuser.numAccounts());
             fromAcct = sc.nextInt()-1;
             if(fromAcct < 0 || fromAcct >= theuser.numAccounts()){
                 System.out.println("Invalid Account try again");
@@ -120,7 +120,7 @@ public class Atm {
          acctBal = theuser.getAcctBalance(fromAcct);
 
          do {
-            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer from :  ");
+            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer to :  " ,theuser.numAccounts());
             toAcct = sc.nextInt()-1;
             if(toAcct < 0 || toAcct >= theuser.numAccounts()){
                 System.out.println("Invalid Account try again");
@@ -149,7 +149,7 @@ public class Atm {
         double acctBal;
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer from :  ");
+            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer from :  ",theuser.numAccounts());
             fromAcct = sc.nextInt()-1;
             if(fromAcct < 0 || fromAcct >= theuser.numAccounts()){
                 System.out.println("Invalid Account try again");
@@ -185,7 +185,7 @@ public class Atm {
         double acctBal;
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer from :  ");
+            System.out.printf("Enter the account number (1-%d) of the account\n" + "to transfer to :  ",theuser.numAccounts());
             toAcct = sc.nextInt()-1;
             if(toAcct < 0 || toAcct >= theuser.numAccounts()){
                 System.out.println("Invalid Account try again");
@@ -199,10 +199,7 @@ public class Atm {
             if(amount < 0){
                 System.out.println("Amount must be greater than 0");
             }
-            else if(amount > acctBal){
-                System.out.println("Amount is Greater than Account balance");
-            }
-        } while (amount < 0 || amount > acctBal);
+        } while (amount < 0);
 
         sc.nextLine();
 
