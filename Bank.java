@@ -1,103 +1,76 @@
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.random.*;
 
 public class Bank {
+
     private String name;
-
     private ArrayList<User> customers;
-
-    //added accounts separately even though users have list of accounts but it is convinient
-
     private ArrayList<Account> accounts;
 
-    public Bank(String name){
+    public Bank(String name) {
         this.name = name;
         this.accounts = new ArrayList<Account>();
         this.customers = new ArrayList<User>();
     }
 
-    public String getNewUserUUID(){
+    public String getNewUserUUID() {
         String uuid;
-        boolean unique = true;
-        Random rg = new Random();
-        while (unique) {
-            
-            uuid = String.format("%06d", rg.nextInt(1000000));
-            boolean check = true;
-            for(Account acc : accounts){
-                if(acc.getUUID().equals(uuid)){
-                    check = false;
+        boolean unique;
+        Random rng = new Random();
+
+        do {
+            uuid = String.format("%06d", rng.nextInt(1000000));
+            unique = true;
+            for (User u : this.customers) {
+                if (uuid.compareTo(u.getUUID()) == 0) {
+                    unique = false;
                     break;
                 }
             }
+        } while (!unique);
 
-            if(check){
-                unique = false;
-                return uuid;
-            }
-
-
-        }
-
-        return "all 6 digit uuid's are used up";
-
+        return uuid;
     }
-    public String getNewAccountUUID(){
+
+    public String getNewAccountUUID() {
         String uuid;
-        boolean unique = true;
-        Random rg = new Random();
-        while (unique) {
-            
-            uuid = String.format("%06d", rg.nextInt(1000000));
-            boolean check = true;
-            for(User cst : customers){
-                if(cst.getUUID().equals(uuid)){
-                    check = false;
+        boolean unique;
+        Random rng = new Random();
+
+        do {
+            uuid = String.format("%06d", rng.nextInt(1000000));
+            unique = true;
+            for (Account a : this.accounts) {
+                if (uuid.compareTo(a.getUUID()) == 0) {
+                    unique = false;
                     break;
                 }
             }
+        } while (!unique);
 
-            if(check){
-                unique = false;
-                return uuid;
-            }
-
-
-        }
-
-        return "all 6 digit uuid's are used up";
+        return uuid;
     }
 
-    public void addAccount(Account acc){//could have removed this as now account wiull be added in back inly for new user
+    public void addAccount(Account acc) {
         this.accounts.add(acc);
     }
 
-    public User addUser(String firstname,String lastname,String pin){
-        User newUser = new User(firstname,lastname,pin,this);
+    public User addUser(String firstName, String lastName, String pin) {
+        User newUser = new User(firstName, lastName, pin, this);
         this.customers.add(newUser);
-
-        Account newaccount = new Account(lastname, newUser, this);
-        newUser.addAccount(newaccount);
-        this.addAccount(newaccount);
         return newUser;
     }
 
-    public User userlogin(String userID,String pin){
-        for(User u : customers){
-            if(u.getUUID().compareTo(userID) == 0 && (u.validatepin(pin))){
+    public User userLogin(String userID, String pin) {
+        for (User u : this.customers) {
+            if (u.getUUID().compareTo(userID) == 0 && u.validatePin(pin)) {
                 return u;
             }
-        }   
-
+        }
         return null;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
-
-    
-
-
 }

@@ -5,93 +5,83 @@ import java.security.NoSuchAlgorithmException;
 public class User {
 
     private String firstName;
-
     private String lastName;
-
     private String uuid;
-
-    private byte pinHash[];
-
+    private byte[] pinHash;
     private ArrayList<Account> accounts;
 
-    public User(String firstname,String lastname,String pin,Bank theBank){
-
-        this.firstName = firstname;
-
-        this.lastName = lastname;
+    public User(String firstName, String lastName, String pin, Bank theBank) {
+        this.firstName = firstName;
+        this.lastName = lastName;
 
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             this.pinHash = md.digest(pin.getBytes());
         } catch (NoSuchAlgorithmException e) {
-            System.out.println("error no such algorithmn");
+            System.out.println("Error: No such algorithm");
             e.printStackTrace();
             System.exit(1);
         }
 
-        this.uuid =  theBank.getNewUserUUID();
-
+        this.uuid = theBank.getNewUserUUID();
         this.accounts = new ArrayList<Account>();
 
-        System.out.printf("New User %s, %s with ID %s created.\n",firstName,lastName,this.uuid);
-
+        System.out.printf("New User %s, %s with ID %s created.\n", firstName, lastName, this.uuid);
     }
 
-    public void addAccount(Account acc){
+    public void addAccount(Account acc) {
         this.accounts.add(acc);
     }
 
-    public String getUUID(){
+    public String getUUID() {
         return uuid;
     }
 
-    public boolean validatepin(String apin){
-        try{
+    public boolean validatePin(String pin) {
+        try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            return MessageDigest.isEqual(md.digest(apin.getBytes()),this.pinHash);
-        }
-        catch(NoSuchAlgorithmException e){
-            System.out.println("error no such algorithmn");
+            return MessageDigest.isEqual(md.digest(pin.getBytes()), this.pinHash);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error: No such algorithm");
             e.printStackTrace();
             System.exit(1);
         }
-
         return false;
     }
 
-    public String getFirstname(){
+    public String getFirstName() {
         return firstName;
     }
 
-    public void printAccountSummary(){
-        System.out.printf("\n\n%s's accounts summary",this.firstName);
-        for(int a = 0;a<accounts.size();a++){
-            System.out.printf("%d) &s\n",a+1,this.accounts.get(a).getSummaryLine());
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void printAccountSummary() {
+        System.out.printf("\n\n%s %s's accounts summary\n", this.firstName, this.lastName);
+        for (int a = 0; a < accounts.size(); a++) {
+            System.out.printf("%d) %s\n", a + 1, this.accounts.get(a).getSummaryLine());
         }
         System.out.println();
     }
 
-    public int numAccounts(){
+    public int numAccounts() {
         return accounts.size();
     }
 
-    public void printAcctTransHistory(int accindx){
-        this.accounts.get(accindx).printTransHistory();
+    public void printAcctTransHistory(int accIndex) {
+        this.accounts.get(accIndex).printTransHistory();
     }
 
-    public double getAcctBalance(int acctindx){
-        return this.accounts.get(acctindx).getBalance();
+    public double getAcctBalance(int accIndex) {
+        return this.accounts.get(accIndex).getBalance();
     }
 
-    public void addAcctTransaction(int acc,double amt,String memo){
-        this.accounts.get(acc).addTransaction(amt,memo);
+    public void addAcctTransaction(int accIndex, double amt, String memo) {
+        this.accounts.get(accIndex).addTransaction(amt, memo);
     }
 
-    public String getAcctUUID(int acctindx){
-        return this.accounts.get(acctindx).getUUID();
+    public String getAcctUUID(int accIndex) {
+        return this.accounts.get(accIndex).getUUID();
     }
-
-
-
-
 }
