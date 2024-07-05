@@ -115,7 +115,7 @@ public class Atm {
         acctBal = theUser.getAcctBalance(fromAcct);
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account to transfer to: ", theUser.numAccounts());
+            System.out.printf("Enter the account number (1 to %d) of the account to transfer to: ", theUser.numAccounts());
             toAcct = sc.nextInt() - 1;
             if (toAcct < 0 || toAcct >= theUser.numAccounts()) {
                 System.out.println("Invalid Account, try again");
