@@ -1,15 +1,14 @@
 import java.util.Scanner;
 
 public class Atm {
-
+    
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Bank theBank = new Bank("State Bank of India");
-
         User aUser = theBank.addUser("Raghuram", "Aluru", "724142");
-        Account newAccount = new Account("Checking", aUser, theBank);
-        aUser.addAccount(newAccount);
-        theBank.addAccount(newAccount);
+
+        // Automatically create the first account for the user
+        aUser.createNewAccount();
 
         User curUser;
 
@@ -25,15 +24,14 @@ public class Atm {
         User authUser;
 
         do {
-            System.out.printf("\n\nWelcome to %s\n\n", theBank.getName());
+            System.out.printf("\n\nWelcome to %s \n\n", theBank.getName());
             System.out.printf("Enter User ID: ");
             userID = sc.nextLine();
-            System.out.printf("Enter PIN: ");
+            System.out.printf("Enter the pin: ");
             pin = sc.nextLine();
-
             authUser = theBank.userLogin(userID, pin);
             if (authUser == null) {
-                System.out.printf("Incorrect User ID or PIN. Please try again.\n");
+                System.out.printf("Incorrect User ID or pin. Please try again. ");
             }
         } while (authUser == null);
 
@@ -42,30 +40,34 @@ public class Atm {
 
     public static void printUserMenu(User curUser, Scanner sc) {
         curUser.printAccountSummary();
+
         int choice;
 
         do {
             System.out.printf("Welcome %s, what would you like to do?\n", curUser.getFirstName());
             System.out.println("  1) Show account transaction history");
-            System.out.println("  2) Make a withdrawal");
-            System.out.println("  3) Make a deposit");
-            System.out.println("  4) Transfer funds");
-            System.out.println("  5) Quit");
-            System.out.println();
-            System.out.printf("Enter choice: ");
+            System.out.println("  2) Make Withdrawal");
+            System.out.println("  3) Deposit");
+            System.out.println("  4) Transfer");
+            System.out.println("  5) Create a new account");
+            System.out.println("  6) Exit");
+            System.out.println("\n");
+            System.out.print("Enter choice: ");
             choice = sc.nextInt();
+            sc.nextLine();
 
-            if (choice < 1 || choice > 5) {
-                System.out.println("Invalid choice. Please choose 1-5.");
+            if (choice < 1 || choice > 6) {
+                System.out.println("Invalid choice, please choose from the above options");
             }
-        } while (choice < 1 || choice > 5);
+
+        } while (choice < 1 || choice > 6);
 
         switch (choice) {
             case 1:
                 Atm.showTransactionHistory(curUser, sc);
                 break;
             case 2:
-                Atm.withdrawFunds(curUser, sc);
+                Atm.withdrawalFunds(curUser, sc);
                 break;
             case 3:
                 Atm.depositFunds(curUser, sc);
@@ -74,127 +76,123 @@ public class Atm {
                 Atm.transferFunds(curUser, sc);
                 break;
             case 5:
-                sc.nextLine();  // Consume newline
-                System.out.println("Exiting. Have a nice day!");
-                System.exit(0);
+                curUser.createNewAccount();
                 break;
         }
 
-        if (choice != 5) {
+        if (choice != 6) {
             Atm.printUserMenu(curUser, sc);
         }
     }
 
     public static void showTransactionHistory(User curUser, Scanner sc) {
-        int theAcct;
+        int theAcc;
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account\nwhose transactions you want to see: ", curUser.numAccounts());
-            theAcct = sc.nextInt() - 1;
-            if (theAcct < 0 || theAcct >= curUser.numAccounts()) {
-                System.out.println("Invalid account. Please try again.");
+            System.out.printf("Enter the account number (1-%d) of the account\n whose transactions you want to see: ", curUser.numAccounts());
+            theAcc = sc.nextInt() - 1;
+            if (theAcc < 0 || theAcc >= curUser.numAccounts()) {
+                System.out.println("Invalid Account, try again");
             }
-        } while (theAcct < 0 || theAcct >= curUser.numAccounts());
+        } while (theAcc < 0 || theAcc >= curUser.numAccounts());
 
-        curUser.printAcctTransHistory(theAcct);
+        curUser.printAcctTransHistory(theAcc);
     }
 
-    public static void transferFunds(User curUser, Scanner sc) {
+    public static void transferFunds(User theUser, Scanner sc) {
         int fromAcct;
         int toAcct;
         double amount;
         double acctBal;
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account to transfer from: ", curUser.numAccounts());
+            System.out.printf("Enter the account number (1-%d) of the account to transfer from: ", theUser.numAccounts());
             fromAcct = sc.nextInt() - 1;
-            if (fromAcct < 0 || fromAcct >= curUser.numAccounts()) {
-                System.out.println("Invalid account. Please try again.");
+            if (fromAcct < 0 || fromAcct >= theUser.numAccounts()) {
+                System.out.println("Invalid Account, try again");
             }
-        } while (fromAcct < 0 || fromAcct >= curUser.numAccounts());
-
-        acctBal = curUser.getAcctBalance(fromAcct);
+        } while (fromAcct < 0 || fromAcct >= theUser.numAccounts());
+        acctBal = theUser.getAcctBalance(fromAcct);
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account to transfer to: ", curUser.numAccounts());
+            System.out.printf("Enter the account number (1-%d) of the account to transfer to: ", theUser.numAccounts());
             toAcct = sc.nextInt() - 1;
-            if (toAcct < 0 || toAcct >= curUser.numAccounts()) {
-                System.out.println("Invalid account. Please try again.");
+            if (toAcct < 0 || toAcct >= theUser.numAccounts()) {
+                System.out.println("Invalid Account, try again");
             }
-        } while (toAcct < 0 || toAcct >= curUser.numAccounts());
+        } while (toAcct < 0 || toAcct >= theUser.numAccounts());
 
         do {
-            System.out.printf("Enter the amount to transfer (max %.02f): ", acctBal);
+            System.out.println("Enter the amount you want to transfer: ");
             amount = sc.nextDouble();
             if (amount < 0) {
-                System.out.println("Amount must be greater than 0.");
+                System.out.println("Amount must be greater than 0");
             } else if (amount > acctBal) {
-                System.out.println("Amount exceeds account balance.");
+                System.out.println("Amount is greater than account balance");
             }
         } while (amount < 0 || amount > acctBal);
 
-        curUser.addAcctTransaction(fromAcct, -amount, String.format("Transfer to account %s", curUser.getAcctUUID(toAcct)));
-        curUser.addAcctTransaction(toAcct, amount, String.format("Transfer from account %s", curUser.getAcctUUID(fromAcct)));
+        theUser.addAcctTransaction(fromAcct, -1 * amount, String.format("Transfer to account %s", theUser.getAcctUUID(toAcct)));
+        theUser.addAcctTransaction(toAcct, amount, String.format("Transfer from account %s", theUser.getAcctUUID(fromAcct)));
     }
 
-    public static void withdrawFunds(User curUser, Scanner sc) {
+    public static void withdrawalFunds(User theUser, Scanner sc) {
         int fromAcct;
         double amount;
         double acctBal;
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account to withdraw from: ", curUser.numAccounts());
+            System.out.printf("Enter the account number (1-%d) of the account to withdraw from: ", theUser.numAccounts());
             fromAcct = sc.nextInt() - 1;
-            if (fromAcct < 0 || fromAcct >= curUser.numAccounts()) {
-                System.out.println("Invalid account. Please try again.");
+            if (fromAcct < 0 || fromAcct >= theUser.numAccounts()) {
+                System.out.println("Invalid Account, try again");
             }
-        } while (fromAcct < 0 || fromAcct >= curUser.numAccounts());
-
-        acctBal = curUser.getAcctBalance(fromAcct);
+        } while (fromAcct < 0 || fromAcct >= theUser.numAccounts());
+        acctBal = theUser.getAcctBalance(fromAcct);
 
         do {
-            System.out.printf("Enter the amount to withdraw (max %.02f): ", acctBal);
+            System.out.println("Enter the amount you want to withdraw: ");
             amount = sc.nextDouble();
             if (amount < 0) {
-                System.out.println("Amount must be greater than 0.");
+                System.out.println("Amount must be greater than 0");
             } else if (amount > acctBal) {
-                System.out.println("Amount exceeds account balance.");
+                System.out.println("Amount is greater than account balance");
             }
         } while (amount < 0 || amount > acctBal);
 
-        sc.nextLine();  // Consume newline
+        sc.nextLine();
 
-        System.out.printf("Enter a memo: ");
+        System.out.println("Enter the memo: ");
         String memo = sc.nextLine();
 
-        curUser.addAcctTransaction(fromAcct, -amount, memo);
+        theUser.addAcctTransaction(fromAcct, -1 * amount, memo);
     }
 
-    public static void depositFunds(User curUser, Scanner sc) {
+    public static void depositFunds(User theUser, Scanner sc) {
         int toAcct;
         double amount;
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account to deposit to: ", curUser.numAccounts());
+            System.out.printf("Enter the account number (1-%d) of the account to deposit to: ", theUser.numAccounts());
             toAcct = sc.nextInt() - 1;
-            if (toAcct < 0 || toAcct >= curUser.numAccounts()) {
-                System.out.println("Invalid account. Please try again.");
+            if (toAcct < 0 || toAcct >= theUser.numAccounts()) {
+                System.out.println("Invalid Account, try again");
             }
-        } while (toAcct < 0 || toAcct >= curUser.numAccounts());
+        } while (toAcct < 0 || toAcct >= theUser.numAccounts());
 
         do {
-            System.out.printf("Enter the amount to deposit: ");
+            System.out.println("Enter the amount you want to deposit: ");
             amount = sc.nextDouble();
             if (amount < 0) {
-                System.out.println("Amount must be greater than 0.");
+                System.out.println("Amount must be greater than 0");
             }
         } while (amount < 0);
 
-        sc.nextLine();  // Consume newline
+        sc.nextLine();
 
-        System.out.printf("Enter a memo: ");
+        System.out.println("Enter the memo: ");
         String memo = sc.nextLine();
 
-        curUser.addAcctTransaction(toAcct, amount, memo);
+        theUser.addAcctTransaction(toAcct, amount, memo);
     }
 }

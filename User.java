@@ -1,6 +1,6 @@
-import java.util.ArrayList;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 public class User {
 
@@ -9,10 +9,12 @@ public class User {
     private String uuid;
     private byte[] pinHash;
     private ArrayList<Account> accounts;
+    private Bank bank;
 
     public User(String firstName, String lastName, String pin, Bank theBank) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.bank = theBank;
 
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -83,5 +85,17 @@ public class User {
 
     public String getAcctUUID(int accIndex) {
         return this.accounts.get(accIndex).getUUID();
+    }
+
+    public void createNewAccount() {
+        int accountNumber = this.numAccounts() + 1;
+        String accountName = "Account " + accountNumber;
+        Account newAccount = new Account(accountName, this, this.bank);
+        this.addAccount(newAccount);
+        this.bank.addAccount(newAccount);
+    }
+
+    public Bank getBank() {
+        return this.bank;
     }
 }
