@@ -89,7 +89,7 @@ public class Atm {
         int theAcc;
 
         do {
-            System.out.printf("Enter the account number (1-%d) of the account\n whose transactions you want to see: ", curUser.numAccounts());
+            System.out.printf("Enter the account number (1 to %d) of the account\n whose transactions you want to see: ", curUser.numAccounts());
             theAcc = sc.nextInt() - 1;
             if (theAcc < 0 || theAcc >= curUser.numAccounts()) {
                 System.out.println("Invalid Account, try again");
